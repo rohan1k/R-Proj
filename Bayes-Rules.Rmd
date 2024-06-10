@@ -1,0 +1,153 @@
+---
+title: "Bayes' Rules"
+author: "Rohan"
+date: "2024-06-10"
+output: html_document
+---
+
+# Exercise 2.8 (Flight delays)
+
+
+Given: - Morning flights: 30% 
+- Afternoon flights: 30% 
+- Evening flights: 40% 
+- Delayed flights: 15% 
+- Delayed morning flights: 40% 
+- Delayed afternoon flights: 50% 
+- Delayed evening flights: 10%
+
+
+### 1. Probability that Mine's flight will be delayed given it is a morning flight
+
+```{r}
+# Given probabilities
+P_Morning <- 0.30
+P_Delayed <- 0.15
+P_Morning_given_Delayed <- 0.40
+
+# Calculate P(Delayed | Morning)
+P_Delayed_given_Morning <- (P_Morning_given_Delayed * P_Delayed) / P_Morning
+P_Delayed_given_Morning
+```
+
+### **2. Probability that Alicia is on a morning flight given her flight is not delayed**
+
+```{r}
+# Given probabilities
+P_Not_Delayed <- 0.85
+P_Not_Delayed_given_Morning <- 0.80
+
+# Calculate P(Morning | Not Delayed)
+P_Morning_given_Not_Delayed <- (P_Not_Delayed_given_Morning * P_Morning) / P_Not_Delayed
+P_Morning_given_Not_Delayed
+```
+
+## Exercise 2.14 (Late Bus)
+
+
+Li Qiang takes the 8:30am bus to work every morning. If the bus is late, she will be late to work. To learn about the probability that her bus will be late pi she surveyed 20 other commuters with the following results:
+- 3 think pi is 0.15
+- 3 think pi is 0.25
+- 8 think pi is 0.5
+- 3 think pi is 0.75
+- 3 think pi is 0.85
+
+
+### Convert the information into a prior model for pi
+
+```{r}
+
+# Given data
+probabilities <- c(0.15, 0.25, 0.50, 0.75, 0.85)
+counts <- c(3, 3, 8, 3, 3)
+```
+
+### A.Prior distribution
+
+```{r}
+# Create a prior probability distribution
+prior_distribution <- data.frame(
+  Probability = probabilities,
+  Count = counts,
+  Proportion = counts / sum(counts)
+)
+prior_distribution
+
+# knitr::kable(prior_distribution, col.names = c("Probability pi)", "Count", "Proportion"))
+```
+
+### Likelihood
+
+
+Assuming a binomial likelihood, the likelihood function for observing 3 late buses out of 13 days given a probability 
+pi is:
+
+
+```{r}
+# Likelihood function
+n <- 13
+k <- 3
+
+likelihood <- dbinom(k, n, probabilities)
+likelihood
+```
+
+### B. Posterior Model
+
+Using Bayes' Theorem, update the prior distribution with the likelihood to get the posterior distribution:
+
+```{r}
+# Calculate the posterior distribution
+prior <- prior_distribution$Proportion
+posterior_unnormalized <- likelihood * prior
+posterior <- posterior_unnormalized / sum(posterior_unnormalized)
+
+posterior_distribution <- data.frame(
+  Probability = probabilities,
+  Posterior = posterior
+)
+posterior_distribution
+
+# knitr::kable(posterior_distribution, col.names = c("Probability pi", "Posterior Proportion"))
+
+```
+
+### C.Comparison
+
+The prior model was based on the opinions of 20 commuters, resulting in the following distribution:
+
+```{r}
+knitr::kable(prior_distribution, col.names = c("Probability pi ", "Count", "Proportion"))
+
+```
+
+The posterior model, updated with Li Qiang's data (3 out of 13 days being late), resulted in the following distribution:
+
+```{r}
+knitr::kable(posterior_distribution, col.names = c("Probability pi", "Posterior Proportion"))
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
